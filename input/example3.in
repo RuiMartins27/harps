@@ -1,0 +1,75 @@
+# Example 3: Reflection and refraction of Gaussian beam in 2D on slighlty lossy medium
+# On a weak laptop, should take less than 3 seconds
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   256   
+    Ny                      =   256        
+    Nz                      =   1   
+    
+    LengthX                 =   0.900             # [m]
+    LengthY                 =   0.900             # [m]
+    LengthZ                 =   0.100             # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   0.8             # [m^2/(V s)]
+    ImagMobility              =   -2.5            # [m^2/(V s)]
+    ElectronDensity           =   1.0E15          # [m^-3]
+    RealPermittivityLocations =   input/example3_permittivity_points.dat      # Indice of poitns with different real Permitivity
+    RealPermittivityValues    =   input/example3_permittivity_values.dat      # Different values of real Permitivity
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU             # Options: direct_LU, BICGSTAB, GMRES
+    Tolerance               =   1.0E-8            # For iterative solvers
+    MaxIterations           =   1000              # For iterative solvers
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   PerfectConductor
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   PerfectConductor
+    Y_upper_Boundary        =   PerfectConductor
+    Z_lower_Boundary        =   None
+    Z_upper_Boundary        =   None
+
+    # Source (oscilating charge)
+
+    # Excitation (fixing amplitudes in a region)
+    ExcitationLocations      =   input/example3_excitation_points.dat                  # Array of Points in a file
+    ExcitationValues         =   input/example3_excitation_values.dat                  # Array of Values in a file
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   True
+    X_lower_Layers        =   40
+    Enable_X_upper        =   True
+    X_upper_Layers        =   40
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   40
+    Enable_Y_upper        =   True
+    Y_upper_Layers        =   40
+    Enable_Z_lower        =   False
+    Z_lower_Layers        =   8
+    Enable_Z_upper        =   False
+    Z_upper_Layers        =   8
+
+    Order                 =   3
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   False
+    StoreResults        =   True
+    PrintConfig         =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldRealPart, FieldComponents
+  End(Output)
+
+End(HARPS)

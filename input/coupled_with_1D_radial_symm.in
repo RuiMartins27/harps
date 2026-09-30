@@ -1,0 +1,95 @@
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   128
+    Ny                      =   256
+    Nz                      =   1          
+    
+    LengthX                 =   0.04318            # [m]
+    LengthY                 =   0.1400             # [m]
+    LengthZ                 =   0.04318            # [m]
+
+    RefinementFactorX       =   4
+    x_BL                    =   0.000            # [m]
+    x_RL                    =   0.000            # [m]
+    x_RR                    =   0.013            # [m]
+    x_BR                    =   0.019            # [m]
+
+    RefinementFactorY       =   4
+    y_BL                    =   0.026            # [m]
+    y_RL                    =   0.034            # [m]
+    y_RR                    =   0.058            # [m]
+    y_BR                    =   0.066            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    Frequency                   =   2.45E9          # [Hz]
+    RealPermittivity            =   1.0             # [no units, relative quantity]
+    RealMobility                =   0.8             # [m^2/(V s)]
+    ImagMobility                =   -2.5            # [m^2/(V s)]
+    ElectronDensity             =   1E11            # [m^-3]
+    RealPermittivityLocations   =   input/example6_permittivity_points.dat  # Indice of points with different real Permitivity
+    RealPermittivityValues      =   input/example6_permittivity_values.dat  # Different values of real Permitivity
+    RealMobilityLocations       =   input/radial_1D_mu_real_points.dat            # Indice of points with different Real Conductivity
+    RealMobilityValues          =   input/radial_1D_mu_real_values.dat            # Different values of Real Conductivity
+    ImagMobilityLocations       =   input/radial_1D_mu_imag_points.dat            # Indice of points with different Real Conductivity
+    ImagMobilityValues          =   input/radial_1D_mu_imag_values.dat            # Different values of Real Conductivity
+    ElectronDensityLocations    =   input/radial_1D_elec_dens_points.dat    # Indice of points with different electron density
+    ElectronDensityValues       =   input/radial_1D_elec_dens_values.dat    # Different values of electron density
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    Scalar                  =   2                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+    Tolerance               =   2.5E-4            # For iterative solvers
+    MaxIterations           =   10000             # For iterative solvers
+    #InitialGuessFile        =   Outputs/fields_solution.bin
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   Neumann
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   Robin
+    Y_upper_Boundary        =   Homogeneous
+    Z_lower_Boundary        =   None
+    Z_upper_Boundary        =   None
+
+    # Source (oscilating charge)
+    #SourceLocations      =   input/example6_excitation_points.dat                  # Array of Points in a file
+    #SourceValues         =   input/example6_excitation_values.dat                  # Array of Values in a file
+
+    Robin_Values          = input/example6_excitation_values.dat                  # Array of Values in a file
+
+    MetalLocations          =   input/example6_metal_points.dat 
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    X_lower_Layers        =   24
+    Enable_X_upper        =   False
+    X_upper_Layers        =   24
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   24
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   24
+    Enable_Z_lower        =   False
+    Z_lower_Layers        =   24
+    Enable_Z_upper        =   False
+    Z_upper_Layers        =   24
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   False
+    StoreResults        =   True
+    PrintConfig         =   False
+    PrintGrid           =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes
+  End(Output)
+
+End(HARPS)

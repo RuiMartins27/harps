@@ -1,0 +1,81 @@
+# Example 4: Plane Wave Ey meets plasma generating Ex field component
+# On a weak laptop, should take less than 20 s
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   256
+    Ny                      =   256 
+    Nz                      =   1          
+    
+    LengthX                 =   0.80            # [m]
+    LengthY                 =   0.80            # [m]
+    LengthZ                 =   0.10            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   0.8             # [m^2/(V s)]
+    ImagMobility              =   -2.5            # [m^2/(V s)]
+    ElectronDensity           =   1E11            # [m^-3]
+    ElectronDensityLocations  =   input/example4_elec_dens_points.dat      # Indice of points with different electron density
+    ElectronDensityValues     =   input/example4_elec_dens_values.dat      # Different values of electron density
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    Tolerance               =   1.0E-7            # For iterative solvers
+    MaxIterations           =   1000              # For iterative solvers
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   PerfectConductor
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   PerfectConductor
+    Y_upper_Boundary        =   PerfectConductor
+    Z_lower_Boundary        =   None
+    Z_upper_Boundary        =   None
+
+    #Excitation_Value        = [F;Complex(0.1,2);F]
+
+    # Source (oscilating charge)
+    #SourceLocations      =   input/example4_excitation_points.dat                  # Array of Points in a file
+    #SourceValues         =   input/example4_excitation_values.dat                  # Array of Values in a file
+    #SourceLocations          =   {(80, 80, 0)(180, 80, 0)(80, 180, 0)(180, 180, 0)}                                              # Array of Points
+    #SourceValues             =   {[Complex(1,2);Complex(0.1,2);Complex(1,0.2)][Complex(1,2);Complex(0.1,2);Complex(1,0.2)][Complex(1,2);Complex(0.1,2);Complex(1,0.2)][Complex(1,2);Complex(0.1,2);Complex(1,0.2)]}                # Array of Values
+
+    # Excitation (fixing amplitudes in a region)
+    ExcitationLocations      =   input/example4_excitation_points.dat                  # Array of Points in a file
+    ExcitationValues         =   input/example4_excitation_values.dat                  # Array of Values in a file
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   True
+    X_lower_Layers        =   50
+    Enable_X_upper        =   True
+    X_upper_Layers        =   50
+    Enable_Y_lower        =   True
+    Y_lower_Layers        =   50
+    Enable_Y_upper        =   True
+    Y_upper_Layers        =   50
+    Enable_Z_lower        =   False
+    Z_lower_Layers        =   16
+    Enable_Z_upper        =   False
+    Z_upper_Layers        =   16
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   False
+    StoreResults        =   True
+    PrintConfig         =   True
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldRealPart, FieldComponents
+  End(Output)
+
+End(HARPS)

@@ -1,0 +1,95 @@
+# Changable input file using the 2D_harps_run.py script. Runs in a 2D geometry similar to the nitrogen MW reactor setup
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   128
+    Ny                      =   256
+    Nz                      =   1          
+    
+    LengthX                 =   0.04318            # [m]
+    LengthY                 =   0.145             # [m]
+    LengthZ                 =   0.04318            # [m]
+
+    RefinementFactorX       =   4
+    x_BL                    =   0            # [m]
+    x_RL                    =   0            # [m]
+    x_RR                    =   0.013819999999999999            # [m]
+    x_BR                    =   0.019819999999999997            # [m]
+    
+    RefinementFactorY       =   4
+    y_BL                    =   0.026            # [m]
+    y_RL                    =   0.034            # [m]
+    y_RR                    =   0.058            # [m]
+    y_BR                    =   0.066            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   0.8             # [m^2/(V s)]
+    ImagMobility              =   -2.5            # [m^2/(V s)]
+    ElectronDensity           =   1.0E11          # [m^-3]
+    RealPermittivityLocations =   input/2D_run_permittivity_points.dat   # Indice of points with different real Permitivity
+    RealPermittivityValues    =   input/2D_run_permittivity_values.dat   # Different values of real Permitivity
+    ElectronDensityLocations  =   input/2D_run_elec_dens_points.dat      # Indice of points with different electron density
+    ElectronDensityValues     =   input/2D_run_elec_dens_values.dat      # Different values of electron density
+    RealMobilityLocations     =   input/2D_run_real_mobi_points.dat      # Indice of points with different real mobility
+    RealMobilityValues        =   input/2D_run_real_mobi_values.dat      # Different values of real mobility
+    ImagMobilityLocations     =   input/2D_run_imag_mobi_points.dat      # Indice of points with different imaginary mobility
+    ImagMobilityValues        =   input/2D_run_imag_mobi_values.dat      # Different values of imaginary mobility
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    PC                      =   bjacobi           # Pre conditioner: bjacobi, asm, gamg, sor, jacobi, mg, hypre (-np 1), ilu (-np 1), none
+    Scalar                  =   2                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+    Tolerance               =   1.0E-8            # For iterative solvers
+    MaxIterations           =   50000              # For iterative solvers
+    #InitialGuessFile        =   Outputs/fields_solution_direct.bin
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   Neumann
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   Robin
+    Y_upper_Boundary        =   PerfectConductor
+    Z_lower_Boundary        =   None
+    Z_upper_Boundary        =   None
+
+    # Source (oscilating charge)
+    Robin_Values          =   input/2D_run_excitation_values.dat                  # Array of Values in a file
+
+    MetalLocations        =   input/2D_run_metal_points.dat 
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    X_lower_Layers        =   50
+    Enable_X_upper        =   False
+    X_upper_Layers        =   50
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   24
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   64
+    Enable_Z_lower        =   False
+    Z_lower_Layers        =   16
+    Enable_Z_upper        =   False
+    Z_upper_Layers        =   16
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   True
+    StoreResults        =   True
+    PrintConfig         =   False
+    PrintGrid           =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldRealPart, FieldComponents, PowerFlux, Inputs
+  End(Output)
+
+End(HARPS)

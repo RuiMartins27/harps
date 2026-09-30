@@ -1,0 +1,70 @@
+# Example 1: Waveguide WR-340 in vacuum - with Robin wave injection in TE10
+# On a weak laptop, should take less than 3 seconds
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   100        
+    Ny                      =   1       
+    Nz                      =   1600
+    
+    LengthX                 =   0.08636         # [m]
+    LengthY                 =   0.04318         # [m]
+    LengthZ                 =   1           # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   0.8             # [m^2/(V s)]
+    ImagMobility              =   -2.5            # [m^2/(V s)]
+    ElectronDensity           =   6.0E16          # [m^-3]
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    Tolerance               =   1.0E-8            # For iterative solvers
+    Scalar                  =   -1                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+    MaxIterations           =   1000              # For iterative solvers
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   PerfectConductor
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   None
+    Y_upper_Boundary        =   None
+    Z_lower_Boundary        =   Robin
+    Z_upper_Boundary        =   Homogeneous
+
+    Robin_Values = input/example1_excitation_values.dat
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    X_lower_Layers        =   8
+    Enable_X_upper        =   False
+    X_upper_Layers        =   8
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   8
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   8
+    Enable_Z_lower        =   False
+    Z_lower_Layers        =   14
+    Enable_Z_upper        =   True
+    Z_upper_Layers        =   800
+
+    Order                 =   3
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   False
+    StoreResults        =   True
+    PrintConfig         =   True
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldRealPart, FieldComponents
+  End(Output)
+
+End(HARPS)

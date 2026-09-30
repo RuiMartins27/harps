@@ -1,0 +1,76 @@
+# MMS: Method of manufactored solutions
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   256
+    Ny                      =   256
+    Nz                      =   1
+    
+    LengthX                 =   0.4         # [m]
+    LengthY                 =   0.4         # [m]
+    LengthZ                 =   0.4         # [m]
+
+    RefinementFactorX       =   -2
+    x_BL                    =   0.13            # [m]
+    x_RL                    =   0.17            # [m]
+    x_RR                    =   0.23            # [m]
+    x_BR                    =   0.27            # [m]
+
+    RefinementFactorY       =   -2
+    y_BL                    =   0.13            # [m]
+    y_RL                    =   0.17            # [m]
+    y_RR                    =   0.23            # [m]
+    y_BR                    =   0.27            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   1.0             # [m^2/(V s)]
+    ImagMobility              =   -2.0            # [m^2/(V s)]
+    ElectronDensity           =   0.0E16          # [m^-3]
+    ElectronDensityLocations  =   input/MMS_elec_dens_points.dat
+    ElectronDensityValues     =   input/MMS_elec_dens_values.dat
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    Scalar                  =    2                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   Homogeneous
+    X_upper_Boundary        =   Homogeneous
+    Y_lower_Boundary        =   Homogeneous
+    Y_upper_Boundary        =   Homogeneous
+    Z_lower_Boundary        =   None
+    Z_upper_Boundary        =   None
+
+    SourceLocations          =    input/MMS_excitation_points.dat 
+    SourceValues             =    input/MMS_excitation_values.dat      # Source term from analytical solution
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    Enable_X_upper        =   False
+    Enable_Y_lower        =   False
+    Enable_Y_upper        =   False
+    Enable_Z_lower        =   False
+    Enable_Z_upper        =   False
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   False
+    StoreResults        =   True
+    PrintConfig         =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   FieldAmplitudes, FieldRealPart, FieldComponents
+  End(Output)
+
+End(HARPS)

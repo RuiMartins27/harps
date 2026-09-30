@@ -1,0 +1,76 @@
+Start(HARPS)
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   128
+    Ny                      =   256
+    Nz                      =   1          
+    
+    LengthX                 =   0.04318            # [m]
+    LengthY                 =   0.1400             # [m]
+    LengthZ                 =   0.04318            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   0.8             # [m^2/(V s)]
+    ImagMobility              =   -2.5            # [m^2/(V s)]
+    ElectronDensity           =   1.0E11            # [m^-3]
+    RealPermittivityLocations =   input/example6_permittivity_points.dat   # Indice of points with different real Permitivity
+    RealPermittivityValues    =   input/example6_permittivity_values.dat   # Different values of real Permitivity
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    PC                      =   bjacobi           # Pre conditioner: bjacobi, asm, gamg, sor, jacobi, mg, hypre (-np 1), ilu (-np 1), none
+    Scalar                  =   2                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+    Tolerance               =   1.0E-8            # For iterative solvers
+    MaxIterations           =   50000              # For iterative solvers
+    #InitialGuessFile        =   Outputs/fields_solution_direct.bin
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   Neumann
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   Robin
+    Y_upper_Boundary        =   PerfectConductor
+    Z_lower_Boundary        =   None
+    Z_upper_Boundary        =   None
+
+    Robin_Values          = input/example6_excitation_values.dat                  # Array of Values in a file
+
+    MetalLocations          =   input/example65_metal_points.dat 
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    X_lower_Layers        =   50
+    Enable_X_upper        =   False
+    X_upper_Layers        =   50
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   24
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   64
+    Enable_Z_lower        =   False
+    Z_lower_Layers        =   16
+    Enable_Z_upper        =   False
+    Z_upper_Layers        =   16
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   True
+    StoreResults        =   True
+    PrintConfig         =   False
+    PrintGrid           =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, Inputs
+  End(Output)
+
+End(HARPS)

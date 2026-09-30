@@ -1,0 +1,64 @@
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   512
+    Ny                      =   512
+    Nz                      =   1          
+    
+    LengthX                 =   0.04318            # [m]
+    LengthY                 =   0.10000            # [m]
+    LengthZ                 =   0.04000            # [m]
+
+
+    RefinementFactorY       =   4
+    y_BL                    =   0.021            # [m]
+    y_RL                    =   0.027            # [m]
+    y_RR                    =   0.059            # [m]
+    y_BR                    =   0.065            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   0.8             # [m^2/(V s)]
+    ImagMobility              =   -2.5            # [m^2/(V s)]
+    ElectronDensity           =   1.0E11            # [m^-3]
+    ElectronDensityLocations  =   input/2D_XY_elec_dens_points.dat      # Indice of points with different electron density
+    ElectronDensityValues     =   input/2D_XY_elec_dens_values.dat      # Different values of electron density
+    RealPermittivityLocations =   input/2D_XY_permittivity_points.dat   # Indice of points with different real Permitivity
+    RealPermittivityValues    =   input/2D_XY_permittivity_values.dat   # Different values of real Permitivity
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    PC                      =   bjacobi           # Pre conditioner: bjacobi, asm, gamg, sor, jacobi, mg, hypre (-np 1), ilu (-np 1), none
+    Scalar                  =   -1                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+    Tolerance               =   1.0E-8            # For iterative solvers
+    MaxIterations           =   50000             # For iterative solvers
+    #InitialGuessFile       =   Outputs/fields_solution_direct.bin
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   PerfectConductor
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   Robin
+    Y_upper_Boundary        =   PerfectConductor
+    Z_lower_Boundary        =   None
+    Z_upper_Boundary        =   None
+
+    Robin_Values            =   input/2D_XY_excitation_values.dat                  # Array of Values in a file
+  End(BoundaryConditions)
+
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   True
+    StoreResults        =   True
+    PrintConfig         =   False
+    PrintGrid           =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldComponents, Inputs
+  End(Output)
+
+End(HARPS)

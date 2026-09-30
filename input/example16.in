@@ -1,0 +1,98 @@
+# Example 9: Nitrogen Reactor Setup in 3D with assumed electrons density (simplified to just waveguide so there are no pml or metal points)
+# On a weak laptop (-np 4), does not have enough memory for 64^3 points, with 32^3 should take less than 1 minute
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   64
+    Ny                      =   64
+    Nz                      =   192
+    
+    LengthX                 =   0.08636           # [m]
+    LengthY                 =   0.10000           # [m]
+    LengthZ                 =   0.10000           # [m]
+
+    RefinementFactorX       =   8
+    x_BL                    =   0.02318            # [m]
+    x_RL                    =   0.03318            # [m]
+    x_RR                    =   0.05318            # [m]
+    x_BR                    =   0.06318            # [m]
+
+    RefinementFactorY       =   8
+    y_BL                    =   0.036            # [m]
+    y_RL                    =   0.046            # [m]
+    y_RR                    =   0.066            # [m]
+    y_BR                    =   0.076            # [m]
+
+    #RefinementFactorZ       =   -8
+    #z_BL                    =   0.0016            # [m]
+    #z_RL                    =   0.0096            # [m]
+    #z_RR                    =   0.0336            # [m]
+    #z_BR                    =   0.0416            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   1              # [m^2/(V s)]
+    ImagMobility              =   -3              # [m^2/(V s)]
+    ElectronDensity           =   1E11            # [m^-3]
+    RealPermittivityLocations =   input/example16_permittivity_points.dat   # Indice of points with different real Permitivity
+    RealPermittivityValues    =   input/example16_permittivity_values.dat   # Different values of real Permitivity
+    ElectronDensityLocations  =   input/example16_elec_dens_points.dat      # Indice of points with different electron density
+    ElectronDensityValues     =   input/example16_elec_dens_values.dat      # Different values of electron density
+    #RealMobilityLocations     =   input/example16_mu_real_points.dat        # Indice of points with different real mobility
+    #RealMobilityValues        =   input/example16_mu_real_values.dat        # Different values of real mobility
+    #ImagMobilityLocations     =   input/example16_mu_imag_points.dat        # Indice of points with different imag mobility
+    #ImagMobilityValues        =   input/example16_mu_imag_values.dat        # Different values of imag mobility
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU          # Options: direct_LU, BICGSTAB, GMRES
+    PC                      =   bjacobi           # Pre conditioner: bjacobi, asm, gamg, sor, jacobi, mg, hypre (-np 1), ilu (-np 1), none
+    Scalar                  =   -1                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+    Tolerance               =   1.0E-7            # For iterative solvers
+    MaxIterations           =   10000             # For iterative solvers
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   PerfectConductor
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   Robin
+    Y_upper_Boundary        =   PerfectConductor
+    Z_lower_Boundary        =   Homogeneous
+    Z_upper_Boundary        =   Homogeneous
+
+    Robin_Values            =   input/example16_excitation_values.dat
+
+    MetalLocations          =   input/example16_metal_points.dat 
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    Enable_X_upper        =   False
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   12
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   12
+    Enable_Z_lower        =   True
+    Z_lower_Layers        =   12
+    Enable_Z_upper        =   True
+    Z_upper_Layers        =   12
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintGrid           =   False
+    PrintSolution       =   False
+    StoreResults        =   True
+    PrintConfig         =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldComponents, Inputs
+  End(Output)
+
+End(HARPS)

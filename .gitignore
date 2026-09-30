@@ -1,0 +1,12 @@
+bin/
+cfd/
+
+*.out
+*.err
+*.exe
+*.csv
+*.dat
+*.txt
+*.png
+*.pdf
+*.info

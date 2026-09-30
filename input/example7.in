@@ -1,0 +1,102 @@
+# Example 7: Nitrogen Reactor Setup in 3D with assumed electrons density resembling Altin 2024
+# On a weak laptop (-np 4), does not have enough memory for 64^3 points, with 32^3 should take less than 1 minute
+# On a ludwigb (-np 32), should take less than 3 minutes
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   64
+    Ny                      =   64
+    Nz                      =   64
+    
+    LengthX                 =   0.08636           # [m]
+    LengthY                 =   0.12200           # [m]
+    LengthZ                 =   0.07500           # [m]
+
+    RefinementFactorX       =   6
+    x_BL                    =   0.023            # [m]
+    x_RL                    =   0.031            # [m]
+    x_RR                    =   0.055            # [m]
+    x_BR                    =   0.063            # [m]
+
+    RefinementFactorY       =   6
+    y_BL                    =   0.041            # [m]
+    y_RL                    =   0.049            # [m]
+    y_RR                    =   0.073            # [m]
+    y_BR                    =   0.081            # [m]
+
+    #RefinementFactorZ       =   2
+    #z_BL                    =   0.015            # [m]
+    #z_RL                    =   0.022            # [m]
+    #z_RR                    =   0.043            # [m]
+    #z_BR                    =   0.050            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   0.8             # [m^2/(V s)]
+    ImagMobility              =   -2.5            # [m^2/(V s)]
+    ElectronDensity           =   1E11            # [m^-3]
+    RealPermittivityLocations =   input/example7_permittivity_points.dat   # Indice of points with different real Permitivity
+    RealPermittivityValues    =   input/example7_permittivity_values.dat   # Different values of real Permitivity
+    ElectronDensityLocations  =   input/example7_elec_dens_points.dat      # Indice of points with different electron density
+    ElectronDensityValues     =   input/example7_elec_dens_values.dat      # Different values of electron density
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU          # Options: direct_LU, BICGSTAB, GMRES
+    PC                      =   bjacobi           # Pre conditioner: bjacobi, asm, gamg, sor, jacobi, mg, hypre (-np 1), ilu (-np 1), none
+    Scalar                  =   -1                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+    Tolerance               =   1.0E-7            # For iterative solvers
+    MaxIterations           =   10000             # For iterative solvers
+    #InitialGuessFile        =   Outputs/fields_solution_direct7.bin
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   PerfectConductor
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   Homogeneous
+    Y_upper_Boundary        =   PerfectConductor
+    Z_lower_Boundary        =   Homogeneous
+    Z_upper_Boundary        =   Homogeneous
+
+    # Source (oscilating charge)
+    SourceLocations      =   input/example7_excitation_points.dat
+    SourceValues         =   input/example7_excitation_values.dat
+    #ExcitationLocations      =   input/example7_excitation_points.dat
+    #ExcitationValues         =   input/example7_excitation_values.dat
+
+    # Excitation (fixing amplitudes in a region)
+
+    MetalLocations          =   input/example7_metal_points.dat 
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    Enable_X_upper        =   False
+    Enable_Y_lower        =   True
+    Y_lower_Layers        =   12
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   12
+    Enable_Z_lower        =   True
+    Z_lower_Layers        =   12
+    Enable_Z_upper        =   True
+    Z_upper_Layers        =   12
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintGrid           =   False
+    PrintSolution       =   False
+    StoreResults        =   True
+    PrintConfig         =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldRealPart, FieldComponents, F_Grad_Components, PowerFlux, Inputs
+  End(Output)
+
+End(HARPS)

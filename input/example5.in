@@ -1,0 +1,77 @@
+# Example 5: Plane Wave on Uniform Plasma for time evolution
+# On a weak laptop, should take less than 0.1 seconds
+# Coupled with electron density equation using time_test.py might take 10 minutes (3000 iterations)
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   1
+    Ny                      =   1
+    Nz                      =   512
+    
+    LengthX                 =   0.1           # [m]
+    LengthY                 =   0.04          # [m]
+    LengthZ                 =   1.2           # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9         # [Hz]
+    RealMobility              =   0.8             # [m^2/(V s)]
+    ImagMobility              =   -2.5            # [m^2/(V s)]
+    ElectronDensity           =   2.0E11          # [m^-3]
+    ElectronDensityLocations  =   input/example5_elec_dens_points.dat      # Indice of points with different electron density
+    ElectronDensityValues     =   input/example5_elec_dens_values.dat      # Different values of electron density
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    Tolerance               =   1.0E-7            # For iterative solvers
+    MaxIterations           =   1500              # For iterative solvers
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   None
+    X_upper_Boundary        =   None
+    Y_lower_Boundary        =   None
+    Y_upper_Boundary        =   None
+    Z_lower_Boundary        =   Excitation
+    Z_upper_Boundary        =   PerfectConductor
+
+    Excitation_Value        =   [F;Complex(5.0,0.0);F]
+
+    # Source (oscilating charge)
+
+    # Excitation (fixing amplitudes in a region)
+
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    X_lower_Layers        =   4
+    Enable_X_upper        =   False
+    X_upper_Layers        =   4
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   0
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   0
+    Enable_Z_lower        =   False
+    Z_lower_Layers        =   96
+    Enable_Z_upper        =   True
+    Z_upper_Layers        =   24
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   False
+    StoreResults        =   True
+    PrintConfig         =   True
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldRealPart, FieldComponents
+  End(Output)
+
+End(HARPS)

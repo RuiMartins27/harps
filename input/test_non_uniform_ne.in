@@ -1,0 +1,67 @@
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   1
+    Ny                      =   1
+    Nz                      =   1024
+    
+    LengthX                 =   0.040          # [m]
+    LengthY                 =   0.040          # [m]
+    LengthZ                 =   0.150          # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9         # [Hz]
+    RealMobility              =   0.8             # [m^2/(V s)]
+    ImagMobility              =   -2.5            # [m^2/(V s)]
+    ElectronDensity           =   2.00E+11          # [m^-3]
+    ElectronDensityLocations  =   input/test_non_uniform_ne_elec_dens_points.dat      # Indice of points with different electron density
+    ElectronDensityValues     =   input/test_non_uniform_ne_elec_dens_values.dat      # Different values of electron density
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    Tolerance               =   1.0E-7            # For iterative solvers
+    MaxIterations           =   1500              # For iterative solvers
+  End(Solver)
+
+  Start(BoundaryConditions)
+    Z_lower_Boundary        =   Homogeneous
+    Z_upper_Boundary        =   Homogeneous
+
+    #Excitation_Value        =   [F;Complex(1.0,0.0);F]
+    #Robin_Value             =   [F;Complex(1.0,0.0);F]
+
+    SourceLocations         =   {(0,0,30)}
+    SourceValues            =   {[F;F;Complex(1.0,0.0)]}
+
+    ExcitationLocations      =   input/test_non_uniform_ne_reflector_points.dat             
+    ExcitationValues         =   {[F;0;0]}             
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    Enable_X_upper        =   False
+    Enable_Y_lower        =   False
+    Enable_Y_upper        =   False
+    Enable_Z_lower        =   True
+    Z_lower_Layers        =   24
+    Enable_Z_upper        =   True
+    Z_upper_Layers        =   24
+
+    Order                 =   3
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   False
+    StoreResults        =   True
+    PrintConfig         =   True
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldRealPart, FieldComponents
+  End(Output)
+
+End(HARPS)

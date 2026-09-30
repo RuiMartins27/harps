@@ -1,0 +1,93 @@
+# Example 8: Plasma setup with a three-stub tuner 3D
+# On a ludwigb (-np 64), should take less than 10 minutes
+
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   32
+    Ny                      =   160
+    Nz                      =   64
+    
+    LengthX                 =   0.04318           # [m]
+    LengthY                 =   0.36000           # [m]
+    LengthZ                 =   0.04318           # [m]
+
+    RefinementFactorX       =   6
+    x_BL                    =   0.000            # [m]
+    x_RL                    =   0.000            # [m]
+    x_RR                    =   0.013            # [m]
+    x_BR                    =   0.019            # [m]
+
+    RefinementFactorY       =   3
+    y_BL                    =   0.120            # [m]
+    y_RL                    =   0.285            # [m]
+    y_RR                    =   0.315            # [m]
+    y_BR                    =   0.325            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   0.4             # [m^2/(V s)]
+    ImagMobility              =   -0.7            # [m^2/(V s)]
+    ElectronDensity           =   1E11            # [m^-3]
+    RealPermittivityLocations =   input/example8_permittivity_points.dat   # Indice of points with different real Permitivity
+    RealPermittivityValues    =   input/example8_permittivity_values.dat   # Different values of real Permitivity
+    ElectronDensityLocations  =   input/example8_elec_dens_points.dat      # Indice of points with different electron density
+    ElectronDensityValues     =   input/example8_elec_dens_values.dat      # Different values of electron density
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    PC                      =   bjacobi           # Pre conditioner: bjacobi, asm, gamg, sor, jacobi, mg, hypre (-np 1), ilu (-np 1), none
+    Scalar                  =   -1                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+    Tolerance               =   1.0E-7            # For iterative solvers
+    MaxIterations           =   5000              # For iterative solvers
+    #InitialGuessFile        =   Outputs/fields_solution_3D.bin
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   Neumann
+    X_upper_Boundary        =   PerfectConductor
+    Y_lower_Boundary        =   Robin
+    Y_upper_Boundary        =   Homogeneous
+    Z_lower_Boundary        =   PerfectConductor
+    Z_upper_Boundary        =   PerfectConductor
+
+    # Source (oscilating charge)
+    #SourceLocations      =   input/example8_excitation_points.dat
+    #SourceValues         =   input/example8_excitation_values.dat
+
+    Robin_Values = input/example8_excitation_values.dat
+
+    # Excitation (fixing amplitudes in a region)
+
+    MetalLocations          =   input/example8_metal_points.dat 
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    Enable_X_upper        =   False
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   12
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   32
+    Enable_Z_lower        =   False
+    Enable_Z_upper        =   False
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   False
+    PrintProgress       =   True
+    PrintSolution       =   True
+    StoreResults        =   True
+    PrintGrid           =   True
+    PrintConfig         =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes,  FieldComponents
+  End(Output)
+
+End(HARPS)

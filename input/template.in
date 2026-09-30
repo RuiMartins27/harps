@@ -1,0 +1,97 @@
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   16
+    Ny                      =   16
+    Nz                      =   30
+
+    LengthX                 =   0.0861          # [m]
+    LengthY                 =   0.0429          # [m]
+    LengthZ                 =   0.3             # [m]
+
+    y_Grid                  =   {(0)(0.00286)(0.00572)(0.00858)(0.0115)(0.0143)(0.01716)(0.0200)(0.02288)(0.02574)(0.0286)(0.03146)(0.03432)(0.03718)(0.04)(0.0429)}                      # Array with y grid points
+
+    RefinementFactorZ       =   4
+    z_BL                    =   0.11            # [m]
+    z_RL                    =   0.14            # [m]
+    z_RR                    =   0.2             # [m]
+    z_BR                    =   0.23            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity            =   1.0             # [no units, relative quantity]
+    Frequency                   =   2.45E9          # [Hz]
+    WaveguideNumber             =   36.3779         # [m^-1] pi/a
+    RealMobility                =   0.8             # [m^2/(V s)]
+    ImagMobility                =   -2.5            # [m^2/(V s)]
+    ElectronDensity             =   1.0E11          # [m^-3]
+    RealPermittivityLocations   =   {(4, 0, 4)(4, 0, 5)(5, 0, 4)(5, 0, 5)}      # Indice of points with different real Permitivity
+    RealPermittivityValues      =   {(9.0E9)(3.5E10)(2.0E10)(5.0E10)}           # Different values of real Permitivity
+    CollisionFrequencyLocations =   {(4, 0, 4)(4, 0, 5)(5, 0, 4)(5, 0, 5)}      # Indice of points with different Collision Frequency
+    CollisionFrequencyValues    =   {(1.7)(1.6)(1.5)(1.3)}                      # Different values of Collision Frequency
+    ElectronDensityLocations    =   input/template_ElectronDensityLocation.dat  # Indice of points with different electron density on a file (needs to be .dat)
+    ElectronDensityValues       =   input/template_ElectronDensityValue.dat     # Different values of electron density on a file (needs to be .dat)
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU             # Options: direct_LU, BICGSTAB, GMRES
+    PC                      =   bjacobi           # Pre conditioner: bjacobi, asm, gamg, sor, jacobi, mg, hypre (-np 1), ilu (-np 1), none
+    Scalar                  =   2                 # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez)
+    Tolerance               =   1.0E-8            # For iterative solvers
+    MaxIterations           =   1500              # For iterative solvers
+    #InitialGuessFile        =   input/template_fields_solution.bin    # File containing the initial guess for iterative solvers
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   PerfectConductor      # Options: PerfectConductor, Homogeneous (set to 0), Neumann (derivative is 0), Excitation, Robin
+    X_upper_Boundary        =   PerfectConductor      # Options: Periodic (only on upper and the lower should be left with None)
+    Y_lower_Boundary        =   PerfectConductor      # Options: None (default adjacent derivative on edges, never recomended)
+    Y_upper_Boundary        =   PerfectConductor
+    Z_lower_Boundary        =   Excitation
+    Z_upper_Boundary        =   Homogeneous           # It is common to use Homogeneous or PerfectConductor after the PML layers
+
+    # "F" on excitation means that component is free
+    Excitation_Value      =   [Complex(11,1);F;F]     # Only one boundary can be forced to some value this way, for more complex things use the ExcitationLocations
+    # Robin_Value           =   [Complex(11,1);F;F]     # Only one boundary can a wave injected this way, for more complex things use the Source Locations
+
+    # Source (oscilating charge)
+    SourceLocations          =   {(5, 0, Nz/2-1)(1, 0, 1)}                                              # Array of Points
+    SourceValues             =   {[Complex(11,1);0;0][Complex(5,-1);0;Complex(0,-0.02)]}                # Array of Values
+
+    # Excitation (fixing amplitudes in a region)
+    ExcitationLocations      =   input/template_ExcitationLocation.dat                   # Array of Points in a file
+    ExcitationValues         =   input/template_ExcitationValue.dat                      # Array of Values in a file
+
+    MetalLocations          =   {(10, 0, 3)(10, 1, 3)(10, 1, 4)}                                  # Array of Points
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    X_lower_Layers        =   8
+    Enable_X_upper        =   False
+    X_upper_Layers        =   8
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   8
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   8
+    Enable_Z_lower        =   False
+    Z_lower_Layers        =   10
+    Enable_Z_upper        =   True
+    Z_upper_Layers        =   10
+
+    Order                 =   3
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    PrintMatrix         =   True
+    PrintProgress       =   True
+    PrintSolution       =   True
+    StoreResults        =   True
+    PrintConfig         =   True
+    PrintGrid           =   True
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, FieldRealPart, FieldComponents, F_Grad_Components, PowerFlux, Inputs
+  End(Output)
+
+End(HARPS)

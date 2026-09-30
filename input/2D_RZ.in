@@ -1,0 +1,92 @@
+Start(HARPS)
+
+  Start(Grid)
+    Nx                      =   1
+    Ny                      =   256
+    Nz                      =   384
+    
+    LengthX                 =   0.08636           # [m]
+    LengthY                 =   0.14             # [m]
+    LengthZ                 =   0.120             # [m]
+
+    
+    RefinementFactorY       =   4
+    y_BL                    =   0.04             # [m]
+    y_RL                    =   0.046            # [m]
+    y_RR                    =   0.066            # [m]
+    y_BR                    =   0.072            # [m]
+  End(Grid)
+
+  Start(PhysicalParameters)
+    RealPermittivity          =   1.0             # [no units, relative quantity]
+    Frequency                 =   2.45E9          # [Hz]
+    RealMobility              =   1               # [m^2/(V s)]
+    ImagMobility              =   -1            # [m^2/(V s)]
+    ElectronDensity           =   1.0E11          # [m^-3]
+    FlagCylindricalPlasma     =   True            # If plasma does not extend indefinetly in X
+    yCenter                   =   0.056           # Y position of tube axis[m]
+    RealPermittivityLocations =   input/2D_RZ_permittivity_points.dat   # Indice of points with different real Permitivity
+    RealPermittivityValues    =   input/2D_RZ_permittivity_values.dat   # Different values of real Permitivity
+    
+    ElectronDensityLocations  =   input/2D_RZ_elec_dens_points.dat      # Indice of points with different electron density
+    ElectronDensityValues     =   input/2D_RZ_elec_dens_values.dat      # Different values of electron density
+    RealMobilityLocations     =   input/2D_RZ_mu_real_points.dat        # Indice of points with different real mobility
+    RealMobilityValues        =   input/2D_RZ_mu_real_values.dat        # Different values of real mobility
+    ImagMobilityLocations     =   input/2D_RZ_mu_imag_points.dat        # Indice of points with different imag mobility
+    ImagMobilityValues        =   input/2D_RZ_mu_imag_values.dat        # Different values of imag mobility
+  End(PhysicalParameters)
+
+  Start(Solver)
+    Method                  =   direct_LU         # Options: direct_LU, BICGSTAB, GMRES
+    PC                      =   bjacobi           # Pre conditioner: bjacobi, asm, gamg, sor, jacobi, mg, hypre (-np 1), ilu (-np 1), none
+    Scalar                  =   -1                # -1 for vector problem (0 for Ex, 1 for Ey, 2 for Ez) (other negative numbers don't work for vector problem)
+    Tolerance               =   1.0E-8            # For iterative solvers
+    MaxIterations           =   50000             # For iterative solvers
+    #InitialGuessFile       =   Outputs/fields_solution_direct.bin
+  End(Solver)
+
+  Start(BoundaryConditions)
+    X_lower_Boundary        =   None
+    X_upper_Boundary        =   None
+    Y_lower_Boundary        =   Robin
+    Y_upper_Boundary        =   PerfectConductor
+    Z_lower_Boundary        =   Homogeneous
+    Z_upper_Boundary        =   Homogeneous
+
+    # Source (oscilating charge)
+    Robin_Values            =   input/2D_RZ_excitation_values.dat                    # Array of Values in a file
+  
+    MetalLocations          =   input/2D_RZ_metal_points.dat 
+    yReflector              =   0.139
+  End(BoundaryConditions)
+
+  Start(PML)                                      # Perfectly Matched Layer
+    Enable_X_lower        =   False
+    X_lower_Layers        =   50
+    Enable_X_upper        =   False
+    X_upper_Layers        =   50
+    Enable_Y_lower        =   False
+    Y_lower_Layers        =   24
+    Enable_Y_upper        =   False
+    Y_upper_Layers        =   64
+    Enable_Z_lower        =   True
+    Z_lower_Layers        =   24
+    Enable_Z_upper        =   True
+    Z_upper_Layers        =   24
+
+    Order                 =   5
+    Sigma_0               =   0.8
+  End(PML)
+
+  Start(Output)
+    StoreResults        =   True
+    PrintMatrix         =   False
+    PrintProgress       =   False
+    PrintSolution       =   False
+    PrintConfig         =   False
+    PrintGrid           =   False
+    OutputDirectory     =   Outputs/
+    Fields              =   AbsorbedPower, FieldAmplitudes, Inputs, FieldComponents
+  End(Output)
+
+End(HARPS)
