@@ -785,13 +785,13 @@ if(problem == 14):
 if(problem == 15):
     N_x = 1; N_y = 256; N_z = 384
     a = 0.08636; b = 0.04318; thickness_wg = 0.02; R_in = 0.0135; R_out = 0.015
-    L_x = a; L_y = 0.14; L_z = 0.120
+    L_x = a; L_y = 0.16; L_z = 0.120
     center_y = 0.056; center_z = L_z/2 - 0.01
 
     x_grid, _, y_grid, _, z_grid, _, is_non_uniform = generate_grid(N_x, N_y, N_z, L_x, L_y, L_z, -1, 4, -1,
                                                             0.01, 0.02, 0.03, 0.04, 0.04, 0.046, 0.066, 0.072, x_grid=None, y_grid=None, z_grid=None)
     
-    load_2d_harps = True
+    load_2d_harps = False
     if(load_2d_harps):
         path_2d = "Outputs/" 
         

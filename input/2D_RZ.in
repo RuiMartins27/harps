@@ -6,7 +6,7 @@ Start(HARPS)
     Nz                      =   384
     
     LengthX                 =   0.08636           # [m]
-    LengthY                 =   0.14             # [m]
+    LengthY                 =   0.16             # [m]
     LengthZ                 =   0.120             # [m]
 
     
@@ -28,12 +28,12 @@ Start(HARPS)
     RealPermittivityLocations =   input/2D_RZ_permittivity_points.dat   # Indice of points with different real Permitivity
     RealPermittivityValues    =   input/2D_RZ_permittivity_values.dat   # Different values of real Permitivity
     
-    ElectronDensityLocations  =   input/2D_RZ_elec_dens_points.dat      # Indice of points with different electron density
-    ElectronDensityValues     =   input/2D_RZ_elec_dens_values.dat      # Different values of electron density
-    RealMobilityLocations     =   input/2D_RZ_mu_real_points.dat        # Indice of points with different real mobility
-    RealMobilityValues        =   input/2D_RZ_mu_real_values.dat        # Different values of real mobility
-    ImagMobilityLocations     =   input/2D_RZ_mu_imag_points.dat        # Indice of points with different imag mobility
-    ImagMobilityValues        =   input/2D_RZ_mu_imag_values.dat        # Different values of imag mobility
+    #ElectronDensityLocations  =   input/2D_RZ_elec_dens_points.dat      # Indice of points with different electron density
+    #ElectronDensityValues     =   input/2D_RZ_elec_dens_values.dat      # Different values of electron density
+    #RealMobilityLocations     =   input/2D_RZ_mu_real_points.dat        # Indice of points with different real mobility
+    #RealMobilityValues        =   input/2D_RZ_mu_real_values.dat        # Different values of real mobility
+    #ImagMobilityLocations     =   input/2D_RZ_mu_imag_points.dat        # Indice of points with different imag mobility
+    #ImagMobilityValues        =   input/2D_RZ_mu_imag_values.dat        # Different values of imag mobility
   End(PhysicalParameters)
 
   Start(Solver)
@@ -57,7 +57,7 @@ Start(HARPS)
     Robin_Values            =   input/2D_RZ_excitation_values.dat                    # Array of Values in a file
   
     MetalLocations          =   input/2D_RZ_metal_points.dat 
-    yReflector              =   0.139
+    #yReflector              =   0.139
   End(BoundaryConditions)
 
   Start(PML)                                      # Perfectly Matched Layer
