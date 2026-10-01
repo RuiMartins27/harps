@@ -66,3 +66,57 @@ If you find a bug please contact the authors.
 
 Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
+
+## When coupling with PeleLMeX installation guide is as follows
+
+Install Dependencies
+
+```
+git clone https://github.com/spack/spack.git ~/spack
+source ~/spack/share/spack/setup-env.sh
+spack install petsc +complex +mumps +metis +scalapack +hypre +suite-sparse +superlu-dist +fortran +shared ^mumps+parmetis
+spack install openmpi
+```
+
+Clone the directories
+```
+mkdir power_coupling
+cd power_coupling
+git clone git@gitlab.com:Ruimartins27/harps.git
+git clone --branch axiswirl-power --single-branch https://github.com/RuiMartins27/PeleLMeX.git
+```
+
+
+Clone the PeleLMeX Submodules
+```
+cd PeleLMeX
+git submodule update --init --recursive
+```
+
+
+Install Chemistry Set if needed. After adding new chemistry set to PelePhysics/Mechanisms such as airThermal.
+When installing airThermal it is common to get error on line 3285 of airThermal/mechanism.H where it is missing amrex::Real  before redP
+```
+poetry install
+poetry update
+cd Submodules/elePhysics/Support/ceptr/
+poetry run convert -f ../../Mechanisms/airThermal/mechanism.yaml
+```
+
+
+Set Environmental Variables
+```
+source ~/spack/share/spack/setup-env.sh
+spack load petsc
+spack load openmpi
+export LD_LIBRARY_PATH=$(spack location -i petsc)/lib:$LD_LIBRARY_PATH
+```
+
+Compile
+```
+make TPL
+make -j4
+```
+
+The input file used by harps when called inside PeleLMeX is harps/input/2D_RZ.in
+Other input files are created using harps/analysis/write_input_files.py . Namely the problem == 15 is the one used to create harps/input/2D_RZ.in (although it is already pre-created in git).  Other useful analysis scripts can be found inside analysis directory.

@@ -163,7 +163,7 @@ def plot_3d_slices(data, output_prefix, title, x_vals, y_vals, z_vals, axis="z",
             plt.xticks(fontsize=16)
             plt.yticks(fontsize=16)
             plt.savefig(f"{output_prefix}_slice_x_{i}.png", dpi=300, bbox_inches="tight")
-            plt.savefig(f"{output_prefix}_slice_x_{i}.pdf", bbox_inches="tight")
+            #plt.savefig(f"{output_prefix}_slice_x_{i}.pdf", bbox_inches="tight")
             plt.close()
 
     elif axis == "y":
@@ -181,7 +181,8 @@ def plot_3d_slices(data, output_prefix, title, x_vals, y_vals, z_vals, axis="z",
             plt.ylabel("$z$ [cm]", fontsize=18)
             plt.xticks(fontsize=16)
             plt.yticks(fontsize=16)
-            plt.savefig(f"{output_prefix}_slice_y_{j}.pdf", dpi=300, bbox_inches="tight")
+            plt.savefig(f"{output_prefix}_slice_y_{j}.png", dpi=300, bbox_inches="tight")
+            #plt.savefig(f"{output_prefix}_slice_y_{j}.pdf", dpi=300, bbox_inches="tight")
             plt.close()
 
     else:  # axis == "z"

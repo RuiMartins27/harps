@@ -220,9 +220,9 @@ std::vector<Complex> CartesianCoordinateSystem::calculateCondGradFunction(Comple
                 // f = ∇(cond) / (i ω ε_0 ε_r)
                 Complex denominator = Complex(0,1) * angular_frequency * Constants::EPSILON_0 * complex_permittivity[point_index(i,j,k)/3];
 
-                f_grad_cond[component_idx]     = 0*grad_x / denominator;  // fx
-                f_grad_cond[component_idx + 1] = 0*grad_y / denominator;  // fy
-                f_grad_cond[component_idx + 2] = 0*grad_z / denominator;  // fz
+                f_grad_cond[component_idx]     = grad_x / denominator;  // fx
+                f_grad_cond[component_idx + 1] = grad_y / denominator;  // fy
+                f_grad_cond[component_idx + 2] = grad_z / denominator;  // fz
             }
         }
     }

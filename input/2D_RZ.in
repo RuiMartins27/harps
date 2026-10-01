@@ -79,7 +79,7 @@ Start(HARPS)
   End(PML)
 
   Start(Output)
-    StoreResults        =   True
+    StoreResults        =   False
     PrintMatrix         =   False
     PrintProgress       =   False
     PrintSolution       =   False

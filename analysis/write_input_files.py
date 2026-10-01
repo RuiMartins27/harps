@@ -791,7 +791,7 @@ if(problem == 15):
     x_grid, _, y_grid, _, z_grid, _, is_non_uniform = generate_grid(N_x, N_y, N_z, L_x, L_y, L_z, -1, 4, -1,
                                                             0.01, 0.02, 0.03, 0.04, 0.04, 0.046, 0.066, 0.072, x_grid=None, y_grid=None, z_grid=None)
     
-    load_2d_harps = False
+    load_2d_harps = True
     if(load_2d_harps):
         path_2d = "Outputs/" 
         
